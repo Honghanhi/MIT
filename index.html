@@ -1,0 +1,57 @@
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIẢI SUDOKU</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:,">
+</head>
+<body>
+
+    <h1>Sudoku Solver</h1>
+
+    <!-- Hiển thị thời gian và điểm số -->
+    <div id="stats-container" style="margin: 10px 0;">
+        <div>⏳ Thời gian: <span id="timer">00:00</span></div>
+        <div>🏆 Điểm: <span id="score" style="display: none;">1000</span></div>
+    </div>
+
+    <div id="controls">
+        <label for="gridSize">Kích thước lưới:</label>
+        <select id="gridSize">
+            <option value="4">4x4</option>
+            <option value="9" selected>9x9</option>
+            <option value="16">16x16</option>
+        </select>
+
+        <label for="difficulty">Độ khó:</label>
+        <select id="difficulty">
+            <option value="easy">Dễ</option>
+            <option value="medium" selected>Trung bình</option>
+            <option value="hard">Khó</option>
+        </select>
+
+        <button id="generateBtn">Tạo Sudoku</button>
+        <button id="createGridBtn">Tạo Lưới Nhập</button>
+        <button id="checkBtn">Kiểm tra đáp án</button> 
+    </div>
+
+    <div id="sudokuGrid"></div>
+
+    <div id="sudokuInputArea">
+        <h2>Nhập số Sudoku:</h2>
+        <p>Nhập các số từ 1 đến <span id="gridSizeValue">9</span>. Để ô trống, hãy để trống ô.</p>
+    </div>
+
+    <!-- Thêm nút Gợi ý nước đi -->
+    <details id="tools">
+        <summary>Tools</summary>
+        <button id="solveBtn">Giải Sudoku</button>
+        <button id="hintBtn">Gợi ý nước đi</button>
+    </details>
+
+    <script src="script.js"></script> 
+</body>
+</html>
