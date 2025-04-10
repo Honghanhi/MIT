@@ -914,19 +914,18 @@ document.addEventListener('DOMContentLoaded', function() {
 // Tạo lưới Sudoku với kích thước tùy chọn và kích thước ô phù hợp
 function createSudokuGrid(size) {
     sudokuGrid.innerHTML = '';
-    startTime = Date.now();  // Reset start time
-    clearInterval(timerInterval); // Clear any existing timer
-    startTimer(); // Start the timer
+    startTime = Date.now();
+    clearInterval(timerInterval);
+    startTimer();
 
-    // Cập nhật kích thước ô dựa trên kích thước lưới
+    // Add the appropriate grid size class
+    sudokuGrid.className = `grid-${size}x${size}`;
+
+    // Set cell size based on grid size
     let cellSize;
     if (size === 4) cellSize = 50;
-    else if (size === 9) cellSize = 40;
-    else if (size === 16) cellSize = 30;
-    else {
-        console.error("Unsupported grid size!");
-        return; // Thoát nếu không hỗ trợ kích thước lưới
-    }
+    else if (size === 9) cellSize = 45;
+    else if (size === 16) cellSize = 45; // Increased from 30 to 45px
 
     for (let i = 0; i < size; i++) {
         const row = document.createElement('div');
@@ -937,37 +936,25 @@ function createSudokuGrid(size) {
             cell.type = 'text';
             cell.className = 'sudoku-cell';
             cell.id = `cell-${i}-${j}`;
+            cell.maxLength = size > 9 ? 2 : 1; // Allow 2 digits for 16x16
 
-            // Cho phép nhập nhiều số nhưng không cho phép ký tự và kiểm tra giá trị hợp lệ
-            cell.oninput = function () {
-                cell.value = cell.value.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
-
-                // Chuyển đổi giá trị nhập vào
+            cell.oninput = function() {
+                // Allow only numbers and limit to the maximum value
+                cell.value = cell.value.replace(/[^0-9]/g, '');
                 const value = parseInt(cell.value);
-
-                // Kiểm tra nếu giá trị không hợp lệ
-                if (value > size || value < 1) {
-                    alert(`Vui lòng nhập số từ 1 đến ${size}.`);
-                    cell.value = ''; // Xóa giá trị không hợp lệ
+                if (value > size) {
+                    cell.value = cell.value.slice(0, -1);
                 }
-
-                // Thay đổi màu nền của ô
+                
                 if (cell.value) {
-                    cell.style.backgroundColor = 'yellow'; // Chuyển màu ô sang màu vàng khi nhập số
+                    cell.style.backgroundColor = 'yellow';
                 } else {
-                    cell.style.backgroundColor = 'white'; // Trở lại màu trắng khi xóa số
+                    cell.style.backgroundColor = 'white';
                 }
             };
 
-            // Cập nhật kích thước của ô theo giá trị của `cellSize`
-            cell.style.width = `${cellSize}px`;
-            cell.style.height = `${cellSize}px`;
-            cell.style.textAlign = 'center'; // Canh giữa số
-            cell.style.fontSize = `${cellSize * 0.7}px`;   // Kích thước chữ nhỏ hơn để vừa với ô
-
             row.appendChild(cell);
         }
-
         sudokuGrid.appendChild(row);
     }
 }
