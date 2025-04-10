@@ -7,6 +7,29 @@
     <title>GIẢI SUDOKU</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="data:,">
+    <style>
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            animation: spin 1s linear infinite;
+            margin: 0 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .button-with-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
 
@@ -46,8 +69,14 @@
 
     <details id="tools">
         <summary>Tools</summary>
-        <button id="solveBtn">Giải Sudoku</button>
-        <button id="hintBtn">Gợi ý nước đi</button>
+        <div class="button-with-loading">
+            <button id="solveBtn">Giải Sudoku</button>
+            <div id="solveLoading" class="loading"></div>
+        </div>
+        <div class="button-with-loading">
+            <button id="hintBtn">Gợi ý nước đi</button>
+            <div id="hintLoading" class="loading"></div>
+        </div>
     </details>
 
     <script src="script.js"></script> 
