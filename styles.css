@@ -22,7 +22,7 @@
 
     /* Màu border */
     --border-light: rgba(255, 255, 255, 0.2);
-    --border-bold: rgba(255, 255, 255, 0.8);
+    --border-bold: rgba(14, 23, 146, 0.8);
 }
 
 /* Reset và Base styles */
@@ -190,12 +190,20 @@ button:hover {
 }
 
 /* Style cho lưới 16x16 */
-.grid-16x16 .sudoku-cell:nth-child(4n+4):not(:last-child) {
-    border-right: 2px solid rgba(255, 255, 255, 0.4);
+.grid-16x16 .sudoku-cell {
+    width: 45px;  /* Tăng kích thước từ 30px lên 45px */
+    height: 45px;
+    font-size: 18px; /* Điều chỉnh kích thước chữ phù hợp */
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .grid-16x16 .sudoku-row:nth-child(4n+4):not(:last-child) .sudoku-cell {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.grid-16x16 .sudoku-cell:nth-child(4n+4):not(:last-child) {
+    border-right: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 /* Input Area */
@@ -241,7 +249,7 @@ button:hover {
 #timer, #score {
     font-size: 1rem;
     font-weight: 500;
-    color: #3b82f6;
+    color: #4580da;
     font-family: 'Space Grotesk', monospace;
     display: block;
     margin: 0;
@@ -290,9 +298,14 @@ button:hover {
         position: static;
         margin-top: 2rem;
     }
+
+    .grid-16x16 .sudoku-cell {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
 }
 
-/* Style cho cell cơ bản */
 .sudoku-cell {
     width: 45px;
     height: 45px;
@@ -304,12 +317,15 @@ button:hover {
     transition: all 0.3s ease;
     margin: 0;
     text-align: center;
-}
 
-.sudoku-cell:focus {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: var(--primary);
-    outline: none;
+    /* THÊM NHỮNG DÒNG NÀY */
+    font-family: 'Roboto', 'Arial', sans-serif;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
 }
 
 /* Style cho lưới 9x9 */
@@ -335,11 +351,11 @@ button:hover {
 
 /* Style cho lưới 4x4 */
 .grid-4x4 .sudoku-cell {
-    border: 1px solid rgb(110, 99, 99); /* viền mờ giữa các ô */
+    border: 1px solid rgb(146, 144, 144); /* viền mờ giữa các ô */
 }
 
 .grid-4x4 .sudoku-row:nth-child(2n) {
-    border-bottom: 3px solid rgba(255, 255, 255, 0.8); /* viền đậm ngăn khối */
+    border-bottom: 3px solid rgba(253, 253, 253, 0.8); /* viền đậm ngăn khối */
 }
 
 .grid-4x4 .sudoku-row:last-child {
@@ -347,20 +363,27 @@ button:hover {
 }
 
 .grid-4x4 .sudoku-cell:nth-child(2n) {
-    border-right: 3px solid rgba(252, 251, 251, 0.8); /* viền đậm chia khối 2x2 */
+    border-right: 3px solid rgba(175, 162, 162, 0.8); /* viền đậm chia khối 2x2 */
 }
 
 .grid-4x4 .sudoku-cell:last-child {
-    border-right: 1px solid rgb(253, 253, 253); /* viền nhẹ cuối dòng */
+    border-right: 1px solid rgb(172, 159, 159); /* viền nhẹ cuối dòng */
 }
 
 /* Style cho lưới 16x16 */
 .grid-16x16 .sudoku-cell {
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    width: 30px;
+    height: 30px;
+    text-align: center;
+}
+
+.sudoku-row {
+    display: flex;
 }
 
 .grid-16x16 .sudoku-row:nth-child(4n) {
-    border-bottom: 3px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 3px solid rgba(201, 199, 199, 0.8);
 }
 
 .grid-16x16 .sudoku-row:last-child {
@@ -368,12 +391,13 @@ button:hover {
 }
 
 .grid-16x16 .sudoku-cell:nth-child(4n) {
-    border-right: 3px solid rgba(255, 255, 255, 0.8);
+    border-right: 3px solid rgba(214, 204, 204, 0.8);
 }
 
-.grid-16x16 .sudoku-cell:last-child {
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+.grid-16x16 .sudoku-row .sudoku-cell:last-child {
+    border-right: none;
 }
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
