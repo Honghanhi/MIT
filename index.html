@@ -11,13 +11,12 @@
 <body>
 
     <h1>Sudoku Solver</h1>
-
-    <!-- Hiển thị thời gian và điểm số -->
-    <div id="stats-container" style="margin: 10px 0;">
-        <div>⏳ Thời gian: <span id="timer">00:00</span></div>
-        <div>🏆 Điểm: <span id="score" style="display: none;">1000</span></div>
-    </div>
-
+    <div class="timer-container">
+        <div id="timer">⏳ Thời gian: 00:00</div>
+        <div id="score">🏆 Điểm:</div>
+      </div>
+      
+    
     <div id="controls">
         <label for="gridSize">Kích thước lưới:</label>
         <select id="gridSize">
@@ -45,7 +44,6 @@
         <p>Nhập các số từ 1 đến <span id="gridSizeValue">9</span>. Để ô trống, hãy để trống ô.</p>
     </div>
 
-    <!-- Thêm nút Gợi ý nước đi -->
     <details id="tools">
         <summary>Tools</summary>
         <button id="solveBtn">Giải Sudoku</button>
