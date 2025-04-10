@@ -1079,66 +1079,143 @@ function generateMultipleSudoku(size, difficulty) {
     startTimer(); // Start the timer
 }
 
-// Sự kiện cho nút giải Sudoku từ lưới hiện tại
-solveBtn.addEventListener('click', () => {
-    const size = parseInt(gridSizeSelect.value);
-    const grid = getGridData(size);
-    if (solveSudoku(grid, size)) {
-        updateGrid(grid, size);
-    } else {
-        alert("This Sudoku puzzle cannot be solved.");
-    }
-});
-
-// Hàm giải Sudoku (đệ quy)
-function solveSudoku(grid, size) {
+// Sửa lại hàm giải Sudoku với xử lý bất đồng bộ
+async function solveSudoku(grid, size) {
     const findEmptyCell = () => {
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
-                if (grid[i][j] === 0) return [i, j]; // Tìm ô trống
+                if (grid[i][j] === 0) return [i, j];
             }
         }
-        return null; // Không còn ô trống
+        return null;
     };
 
     const isValid = (row, col, num) => {
-        // Kiểm tra xem số có nằm trong khoảng cho phép hay không
-        if (num < 1 || num > size) {
-            alert(`Số ${num} không hợp lệ. Vui lòng nhập số từ 1 đến ${size}.`);
-            return false; // Số không hợp lệ
-        }
-
         for (let x = 0; x < size; x++) {
-            if (grid[row][x] === num || grid[x][col] === num) return false; // Kiểm tra hàng và cột
+            if (grid[row][x] === num || grid[x][col] === num) return false;
         }
+        
         const subgridSize = Math.sqrt(size);
-        const startRow = row - row % subgridSize;
-        const startCol = col - col % subgridSize;
+        const boxRow = Math.floor(row / subgridSize) * subgridSize;
+        const boxCol = Math.floor(col / subgridSize) * subgridSize;
+        
         for (let i = 0; i < subgridSize; i++) {
-            for (let j = 0; i < subgridSize; j++) {
-                if (grid[i + startRow][j + startCol] === num) return false; // Kiểm tra ô con
+            for (let j = 0; j < subgridSize; j++) {
+                if (grid[boxRow + i][boxCol + j] === num) return false;
             }
         }
-        return true; // Số hợp lệ
+        return true;
     };
 
-    const emptyCell = findEmptyCell();
-    if (!emptyCell) return true; // Đã giải xong
+    const solve = async () => {
+        const emptyCell = findEmptyCell();
+        if (!emptyCell) return true;
 
-    const [row, col] = emptyCell;
-
-    for (let num = 1; num <= size; num++) {
-        if (isValid(row, col, num)) {
-            grid[row][col] = num;
-
-            if (solveSudoku(grid, size)) return true; // Đệ quy giải Sudoku
-
-            grid[row][col] = 0; // Quay lui
+        const [row, col] = emptyCell;
+        for (let num = 1; num <= size; num++) {
+            if (isValid(row, col, num)) {
+                grid[row][col] = num;
+                // Thêm độ trễ nhỏ để không block UI
+                await new Promise(resolve => setTimeout(resolve, 0));
+                
+                if (await solve()) return true;
+                grid[row][col] = 0;
+            }
         }
-    }
+        return false;
+    };
 
-    return false; // Không có lời giải
+    try {
+        const solved = await Promise.race([
+            solve(),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout')), 10000)
+            )
+        ]);
+        return solved;
+    } catch (error) {
+        if (error.message === 'Timeout') {
+            alert('Không thể giải được trong thời gian cho phép!');
+        }
+        return false;
+    }
 }
+
+document.getElementById('solveBtn').addEventListener('click', async () => {
+    const solveBtn = document.getElementById('solveBtn');
+    const loading = document.getElementById('solveLoading');
+    
+    try {
+        solveBtn.disabled = true;
+        loading.style.display = 'block';
+        
+        const size = parseInt(gridSizeSelect.value);
+        const grid = getGridData(size);
+        
+        const solved = await solveSudoku(grid, size);
+        if (solved) {
+            updateGrid(grid, size);
+        }
+    } catch (error) {
+        console.error('Lỗi khi giải Sudoku:', error);
+        alert('Có lỗi xảy ra khi giải Sudoku!');
+    } finally {
+        solveBtn.disabled = false;
+        loading.style.display = 'none';
+    }
+});
+
+// Hàm gợi ý nước đi cho một ô trống
+async function giveHint() {
+    const hintBtn = document.getElementById('hintBtn');
+    const loading = document.getElementById('hintLoading');
+    
+    try {
+        hintBtn.disabled = true;
+        loading.style.display = 'block';
+        
+        const size = parseInt(gridSizeSelect.value);
+        const grid = getGridData(size);
+        const gridCopy = grid.map(row => [...row]);
+        
+        const solved = await solveSudoku(gridCopy, size);
+        if (!solved) {
+            alert('Không thể tìm lời giải cho lưới hiện tại!');
+            return;
+        }
+
+        // Tìm một ô trống ngẫu nhiên
+        const emptyCells = [];
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (grid[i][j] === 0) {
+                    emptyCells.push([i, j]);
+                }
+            }
+        }
+
+        if (emptyCells.length === 0) {
+            alert('Không có ô trống nào để gợi ý!');
+            return;
+        }
+
+        // Chọn ngẫu nhiên một ô trống
+        const [row, col] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        const cell = document.getElementById(`cell-${row}-${col}`);
+        cell.value = gridCopy[row][col];
+        cell.style.backgroundColor = 'lightgreen';
+        
+    } catch (error) {
+        console.error('Lỗi khi đưa ra gợi ý:', error);
+        alert('Có lỗi xảy ra khi tìm gợi ý!');
+    } finally {
+        hintBtn.disabled = false;
+        loading.style.display = 'none';
+    }
+}
+
+// Cập nhật event listener cho nút hint
+document.getElementById('hintBtn').addEventListener('click', giveHint);
 
 // Hàm kiểm tra xem lưới Sudoku có được giải đúng không
 function checkSudokuSolution(grid, size) {
@@ -1240,52 +1317,5 @@ document.getElementById('checkBtn').addEventListener('click', () => {
       alert(`🎉 Chính xác! Bạn đạt ${score} điểm.`);
   } else {
       alert("❌ Sai rồi! Các ô sai đã được đánh dấu màu đỏ.");
-  }
-});
-
-// Hàm gợi ý nước đi cho một ô trống
-function giveHint() {
-  const size = parseInt(gridSizeSelect.value);
-  const grid = getGridData(size);
-  // Tạo bản sao của grid để giải mà không ảnh hưởng đến grid hiện tại
-  const gridCopy = cloneGrid(grid);
-  // Giải sudoku trên gridCopy
-  if (!solveSudoku(gridCopy, size)) {
-      alert("Không thể tìm lời giải cho lưới hiện tại!");
-      return;
-  }
-  // Tìm một ô trống trong grid ban đầu và thay bằng số từ gridCopy
-  let hintGiven = false;
-  for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-          const cell = document.getElementById(`cell-${i}-${j}`);
-          if (cell.value === '') { // Nếu ô trống thì đưa gợi ý
-              cell.value = gridCopy[i][j];
-              cell.style.backgroundColor = 'lightgreen'; // Màu để nhận biết là gợi ý
-              hintGiven = true;
-              return; // Chỉ gợi ý một ô mỗi lần bấm
-          }
-      }
-  }
-  if (!hintGiven) {
-      alert("Lưới đã đầy, không có ô trống để gợi ý!");
-  }
-}
-
-// Thêm sự kiện cho nút gợi ý nếu có
-document.addEventListener('DOMContentLoaded', function() {
-  // Kiểm tra xem nút hint có tồn tại không
-  const hintBtn = document.getElementById('hintBtn');
-  if (hintBtn) {
-      hintBtn.addEventListener('click', giveHint);
-  }
-  
-  // Kiểm tra nếu có nút createButton, thêm sự kiện startTimer
-  const createButton = document.getElementById('createButton');
-  if (createButton) {
-      createButton.addEventListener('click', () => {
-          createSudokuGrid(); // Hàm tạo Sudoku
-          startTimer(); // Bắt đầu đếm thời gian ngay khi lưới được tạo
-      });
   }
 });
